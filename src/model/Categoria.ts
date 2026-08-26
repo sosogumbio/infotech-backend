@@ -1,0 +1,1 @@
+import type CategoriaDTO from "../dto/CategoriaDTO.js";

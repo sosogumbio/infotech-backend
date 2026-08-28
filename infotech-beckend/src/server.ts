@@ -1,12 +1,14 @@
 import express from "express";
 import cors from "cors";
-import { Router } from "express";
+import router from "../src/routes.js";
 
-const server = express();
+const app = express();
 
-server.use(express.json());
-server.use(cors());
+app.use(cors());
+app.use(express.json());
 
-server.use(Router);
+app.use(router);
 
-export { server }
+app.listen(3333, () => {
+    console.log("Servidor rodando na porta 3333");
+});

@@ -1,5 +1,5 @@
-import { Request, Response } from "express";
-import Produto from "../model/Produto";
+import type { Request, Response } from 'express';
+import Produto from "../model/Produto.js";
 
 class ProdutoController {
     static async listarProdutos(req: Request, res: Response) {

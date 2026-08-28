@@ -1,5 +1,7 @@
 import { Router } from "express";
 import ProdutoController from "../src/controller/ProdutoController.js";
+import CategoriaController from "../src/controller/CategoriaController.js";
+import MovimentacaoController from "../src/controller/MovimentacaoController.js";
 
 const router = Router();
 
@@ -19,5 +21,13 @@ router.post(
     "/api/produtos",
     ProdutoController.cadastrarProduto
 );
+
+router.get("/api/categorias", CategoriaController.listarCategorias);
+router.get("/api/categorias/:id", CategoriaController.buscarCategoria);
+router.post("/api/categorias", CategoriaController.cadastrarCategoria);
+
+router.get("/api/movimentacoes", MovimentacaoController.listarMovimentacoes);
+router.get("/api/movimentacoes/:id", MovimentacaoController.buscarMovimentacao);
+router.post("/api/movimentacoes", MovimentacaoController.cadastrarMovimentacao);
 
 export default router;

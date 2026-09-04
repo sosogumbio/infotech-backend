@@ -1,5 +1,5 @@
 import type CategoriaDTO from "../dto/CategoriaDTO.js";
-import { DatabaseModel } from "./DatabaseModel.js";
+import { DatabaseModel } from "../model/DatabaseModel.js";
 
 const database = new DatabaseModel().pool;
 

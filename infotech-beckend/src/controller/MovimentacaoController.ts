@@ -1,18 +1,16 @@
-import type { Request, Response } from 'express';
-import Movimentacao from '../model/Movimentacao.js';
+import type { Request, Response } from "express";
+import Movimentacao from "../model/Movimentacao.js";
 
 class MovimentacaoController {
     static async listarMovimentacoes(req: Request, res: Response) {
         try {
-            const movimentacoes = await Movimentacao.listarMovimentacoes();
+            const movs = await Movimentacao.listarMovimentacoes();
 
-            return res.status(200).json(movimentacoes);
+            return res.status(200).json(movs);
         } catch (erro) {
             console.error(erro);
 
-            return res.status(500).json({
-                mensagem: 'Erro ao listar movimentações'
-            });
+            return res.status(500).json({ mensagem: "Erro ao listar movimentações" });
         }
     }
 
@@ -21,99 +19,72 @@ class MovimentacaoController {
             const id = Number(req.params.id);
 
             if (isNaN(id)) {
-                return res.status(400).json({
-                    mensagem: 'ID da movimentação inválido'
-                });
+                return res.status(400).json({ mensagem: "ID da movimentação inválido" });
             }
 
-            const movimentacao = await Movimentacao.buscarMovimentacao(id);
+            const mov = await Movimentacao.buscarMovimentacao(id);
 
-            if (!movimentacao) {
-                return res.status(404).json({
-                    mensagem: 'Movimentação não encontrada'
-                });
+            if (!mov) {
+                return res.status(404).json({ mensagem: "Movimentação não encontrada" });
             }
 
-            return res.status(200).json(movimentacao);
+            return res.status(200).json(mov);
         } catch (erro) {
             console.error(erro);
 
-            return res.status(500).json({
-                mensagem: 'Erro ao buscar movimentação'
-            });
+            return res.status(500).json({ mensagem: "Erro ao buscar movimentação" });
         }
     }
 
     static async cadastrarMovimentacao(req: Request, res: Response) {
         try {
-            const idProduto = Number(req.body.id_produto);
-            const idMovimentacaoOrigem = req.body.id_movimentacao_origem == null
-                ? null
-                : Number(req.body.id_movimentacao_origem);
-            const tipo = String(req.body.tipo ?? '').trim().toLowerCase();
-            const motivo = String(req.body.motivo ?? '').trim();
-            const quantidade = Number(req.body.quantidade);
-            const precoUnitarioPraticado = req.body.preco_unitario_praticado == null
-                ? null
-                : Number(req.body.preco_unitario_praticado);
-            const observacao = String(req.body.observacao ?? '').trim();
-
-            if (isNaN(idProduto) || idProduto <= 0) {
-                return res.status(400).json({
-                    mensagem: 'O id do produto é obrigatório'
-                });
-            }
-
-            if (!['entrada', 'saida', 'ajuste'].includes(tipo)) {
-                return res.status(400).json({
-                    mensagem: 'O tipo da movimentação deve ser: entrada, saída ou ajuste'
-                });
-            }
-
-            if (!motivo) {
-                return res.status(400).json({
-                    mensagem: 'O motivo da movimentação é obrigatório'
-                });
-            }
-
-            if (isNaN(quantidade) || quantidade <= 0) {
-                return res.status(400).json({
-                    mensagem: 'A quantidade deve ser maior que zero'
-                });
-            }
-
-            if (!observacao) {
-                return res.status(400).json({
-                    mensagem: 'A observação da movimentação é obrigatória'
-                });
-            }
-
-            let valorTotal = req.body.valor_total == null
-                ? null
-                : Number(req.body.valor_total);
-
-            if (valorTotal === null && precoUnitarioPraticado !== null) {
-                valorTotal = Number(precoUnitarioPraticado) * quantidade;
-            }
-
-            const movimentacao = await Movimentacao.cadastrarMovimentacao(
-                idProduto,
-                idMovimentacaoOrigem,
+            const {
+                id_produto,
+                id_movimentacao_origem,
                 tipo,
                 motivo,
                 quantidade,
-                precoUnitarioPraticado,
-                valorTotal,
+                preco_unitario_praticado,
+                valor_total,
                 observacao
+            } = req.body;
+
+            if (!id_produto) {
+                return res.status(400).json({ mensagem: "O produto é obrigatório" });
+            }
+
+            if (!tipo || typeof tipo !== "string" || tipo.trim() === "") {
+                return res.status(400).json({ mensagem: "O tipo é obrigatório" });
+            }
+
+            if (!motivo || typeof motivo !== "string" || motivo.trim() === "") {
+                return res.status(400).json({ mensagem: "O motivo é obrigatório" });
+            }
+
+            if (quantidade === undefined || quantidade === null || Number(quantidade) <= 0) {
+                return res.status(400).json({ mensagem: "A quantidade deve ser maior que zero" });
+            }
+
+            if (!observacao || typeof observacao !== "string") {
+                return res.status(400).json({ mensagem: "A observação é obrigatória" });
+            }
+
+            const mov = await Movimentacao.cadastrarMovimentacao(
+                Number(id_produto),
+                id_movimentacao_origem ? Number(id_movimentacao_origem) : null,
+                tipo.trim(),
+                motivo.trim(),
+                Number(quantidade),
+                preco_unitario_praticado !== undefined && preco_unitario_praticado !== null ? Number(preco_unitario_praticado) : null,
+                valor_total !== undefined && valor_total !== null ? Number(valor_total) : null,
+                observacao.trim()
             );
 
-            return res.status(201).json(movimentacao);
+            return res.status(201).json(mov);
         } catch (erro) {
             console.error(erro);
 
-            return res.status(500).json({
-                mensagem: 'Erro ao cadastrar movimentação'
-            });
+            return res.status(500).json({ mensagem: "Erro ao cadastrar movimentação" });
         }
     }
 }

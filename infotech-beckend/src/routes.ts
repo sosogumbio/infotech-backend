@@ -1,33 +1,31 @@
 import { Router } from "express";
-import ProdutoController from "../src/controller/ProdutoController.js";
-import CategoriaController from "../src/controller/CategoriaController.js";
-import MovimentacaoController from "../src/controller/MovimentacaoController.js";
-
+import ProdutoController from "./controller/ProdutoController.js";
+import { Auth } from "./middlewares/Auth.js";
+import MovimentacaoController from "./controller/MovimentacaoController.js";
+import CategoriaController from "./controller/CategoriaController.js";
 const router = Router();
 
-router.get("/api/produtos", ProdutoController.listarProdutos);
 
-router.get(
-    "/api/produtos/reposicao",
-    ProdutoController.listarProdutosReposicao
-);
+router.get("/produtos", ProdutoController.listarProdutos);
+router.get("/produtos/:id", ProdutoController.buscarProduto);
+router.post("/produtos", ProdutoController.cadastrarProduto);
+router.put("/produtos/:id", ProdutoController.atualizarProduto);
+router.delete("/produtos/:id", ProdutoController.removerProduto);
+router.get("/produtos-reposicao", ProdutoController.listarProdutosReposicao);
 
-router.get(
-    "/api/produtos/:id",
-    ProdutoController.buscarProduto
-);
+router.get("/movimentacoes", MovimentacaoController.listarMovimentacoes);
+router.get("/movimentacoes/:id", MovimentacaoController.buscarMovimentacao);
+router.post("/movimentacoes", MovimentacaoController.cadastrarMovimentacao);
 
-router.post(
-    "/api/produtos",
-    ProdutoController.cadastrarProduto
-);
 
-router.get("/api/categorias", CategoriaController.listarCategorias);
-router.get("/api/categorias/:id", CategoriaController.buscarCategoria);
-router.post("/api/categorias", CategoriaController.cadastrarCategoria);
+router.get("/categorias", CategoriaController.todos);
+router.get("/categorias/:id", CategoriaController.categoria);
+router.post("/categorias", CategoriaController.cadastrar);
+router.put("/categorias/:id", CategoriaController.atualizar);
+router.delete("/categorias/:id", CategoriaController.remover);
 
-router.get("/api/movimentacoes", MovimentacaoController.listarMovimentacoes);
-router.get("/api/movimentacoes/:id", MovimentacaoController.buscarMovimentacao);
-router.post("/api/movimentacoes", MovimentacaoController.cadastrarMovimentacao);
+
+router.post("/login", Auth.validacaoUsuario);
+
 
 export default router;

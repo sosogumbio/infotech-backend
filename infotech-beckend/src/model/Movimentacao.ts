@@ -1,8 +1,10 @@
-import DatabaseModel from '../DatabaseModel.js';
+import { DatabaseModel } from "../model/DatabaseModel.js";
+
+const database = new DatabaseModel().pool;
 
 class Movimentacao {
     static async listarMovimentacoes() {
-        const resultado = await DatabaseModel.query(`
+        const resultado = await database.query(`
             SELECT
                 id_movimentacao,
                 id_produto,
@@ -15,14 +17,14 @@ class Movimentacao {
                 observacao,
                 data_movimentacao
             FROM movimentacao
-            ORDER BY data_movimentacao DESC
+            ORDER BY id_movimentacao
         `);
 
         return resultado.rows;
     }
 
     static async buscarMovimentacao(id: number) {
-        const resultado = await DatabaseModel.query(`
+        const resultado = await database.query(`
             SELECT
                 id_movimentacao,
                 id_produto,
@@ -51,7 +53,7 @@ class Movimentacao {
         valorTotal: number | null,
         observacao: string
     ) {
-        const resultado = await DatabaseModel.query(`
+        const resultado = database.query(`
             INSERT INTO movimentacao (
                 id_produto,
                 id_movimentacao_origem,
@@ -61,8 +63,7 @@ class Movimentacao {
                 preco_unitario_praticado,
                 valor_total,
                 observacao
-            )
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
             RETURNING *
         `, [
             idProduto,
@@ -75,7 +76,7 @@ class Movimentacao {
             observacao
         ]);
 
-        return resultado.rows[0];
+        return resultado.then(res => res.rows[0]);
     }
 }
 
